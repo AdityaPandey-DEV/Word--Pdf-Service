@@ -1,6 +1,6 @@
-# Render PDF Service
+# Word PDF Service
 
-A Node.js service for converting DOCX files to PDF using LibreOffice. Designed to run on Render and handle asynchronous document conversion.
+A Node.js service for converting DOCX files to PDF using LibreOffice. Designed to run on Render, Fly.io, or any Node.js hosting platform and handle both synchronous and asynchronous document conversion.
 
 ## Features
 
@@ -84,6 +84,26 @@ The service will:
 2. Convert it to PDF using LibreOffice
 3. Send the PDF (base64 encoded) to `callbackUrl` via webhook
 
+### POST /api/convert-sync
+
+Convert a DOCX file to PDF synchronously (returns immediately with PDF).
+
+**Request:**
+```json
+{
+  "docxUrl": "https://example.com/document.docx"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "pdfBuffer": "base64_encoded_pdf_content",
+  "size": 123456
+}
+```
+
 ### GET /health
 
 Health check endpoint.
@@ -92,7 +112,7 @@ Health check endpoint.
 ```json
 {
   "status": "ok",
-  "service": "render-pdf-service",
+  "service": "word-pdf-service",
   "timestamp": "2024-01-01T00:00:00.000Z"
 }
 ```
@@ -125,9 +145,16 @@ When conversion completes, the service sends a POST request to `callbackUrl`:
 }
 ```
 
-## Deployment on Render
+## Deployment
 
-### Option 1: Using Dockerfile (Recommended)
+### Option 1: Fly.io (Recommended)
+
+1. Install Fly CLI: `curl -L https://fly.io/install.sh | sh`
+2. Login: `fly auth login`
+3. Deploy: `fly deploy`
+4. The service will be available at `https://your-app-name.fly.dev`
+
+### Option 2: Render (Using Dockerfile)
 
 1. Create a new Web Service on Render
 2. Connect your Git repository
@@ -137,7 +164,7 @@ When conversion completes, the service sends a POST request to `callbackUrl`:
    - `PORT` (default: 10000)
 5. Deploy!
 
-### Option 2: Using Build Commands
+### Option 3: Render (Using Build Commands)
 
 1. Create a new Web Service on Render
 2. Connect your Git repository

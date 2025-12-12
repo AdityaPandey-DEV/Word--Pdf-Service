@@ -13,6 +13,11 @@ const execAsync = promisify(exec);
 
 // Convert DOCX to PDF using LibreOffice
 async function convertDocxToPdf(docxUrl, orderId) {
+  // Check if this is a test/health-check URL
+  if (docxUrl === 'test' || docxUrl === 'health-check' || !docxUrl.startsWith('http')) {
+    throw new Error('Invalid DOCX URL: Only absolute URLs are supported');
+  }
+  
   const tempDir = os.tmpdir();
   const timestamp = Date.now();
   const inputFile = path.join(tempDir, `input_${orderId}_${timestamp}.docx`);
@@ -83,7 +88,7 @@ async function convertDocxToPdf(docxUrl, orderId) {
 app.get('/health', (req, res) => {
   res.json({
     status: 'ok',
-    service: 'render-pdf-service',
+    service: 'word-pdf-service',
     timestamp: new Date().toISOString()
   });
 });
@@ -245,7 +250,7 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
-  console.log(`\n🚀 Render PDF Service started`);
+  console.log(`\n🚀 Word PDF Service started`);
   console.log(`   Port: ${PORT}`);
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`   LibreOffice: Checking...`);

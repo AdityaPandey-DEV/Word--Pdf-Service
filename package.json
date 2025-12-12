@@ -1,7 +1,7 @@
 {
-  "name": "render-pdf-service",
+  "name": "word-pdf-service",
   "version": "1.0.0",
-  "description": "Render service for DOCX to PDF conversion using LibreOffice",
+  "description": "Word to PDF conversion service using LibreOffice",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
