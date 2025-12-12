@@ -218,6 +218,15 @@ async function convertDocxToPdfFromUrl(docxUrl, orderId) {
   }
 }
 
+// Keep-alive endpoint to prevent auto-stop
+app.get('/keepalive', (req, res) => {
+  res.json({
+    status: 'ok',
+    service: 'word-pdf-service',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.json({
@@ -421,12 +430,22 @@ app.listen(PORT, () => {
   console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
   console.log(`   LibreOffice: Checking...`);
   
-  // Verify LibreOffice is installed
+  // Pre-warm LibreOffice to avoid first-request delay
   exec('libreoffice --version', (error, stdout, stderr) => {
     if (error) {
       console.error(`   ⚠️ LibreOffice not found: ${error.message}`);
     } else {
       console.log(`   ✅ LibreOffice: ${stdout.trim()}`);
+      
+      // Run a lightweight command to fully initialize LibreOffice
+      console.log(`   🔥 Pre-warming LibreOffice...`);
+      exec('libreoffice --headless --version', (warmError, warmStdout, warmStderr) => {
+        if (warmError) {
+          console.warn(`   ⚠️ LibreOffice pre-warm warning: ${warmError.message}`);
+        } else {
+          console.log(`   ✅ LibreOffice pre-warmed and ready`);
+        }
+      });
     }
   });
 });
